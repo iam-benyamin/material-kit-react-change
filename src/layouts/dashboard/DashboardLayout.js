@@ -59,16 +59,6 @@ export default function DashboardLayout() {
       </StyledRoot>
     ) :
     (
-      <StyledRoot>
-      <Header onOpenNav={() => setOpen(true)} />
-
-      <Nav openNav={open} onCloseNav={() => setOpen(false)} />
-
-      <Main>
-        <BasicTable />
-        <Outlet />
-      </Main>
-      {/* <Navigate to='/login' /> */}
-    </StyledRoot>
+      <Navigate to='/login' />
     )
 }
