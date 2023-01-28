@@ -1,3 +1,6 @@
+
+// react auth kit 
+import { AuthProvider } from 'react-auth-kit'
 // routes
 import Router from './routes';
 // theme
@@ -13,7 +16,13 @@ export default function App() {
     <ThemeProvider>
       <ScrollToTop />
       <StyledChart />
-      <Router />
+      <AuthProvider
+        authType={'cookie'}
+        authName={'_auth'}
+        cookieDomain={window.location.hostname}
+      >
+        <Router />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

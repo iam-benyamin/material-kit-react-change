@@ -1,10 +1,15 @@
 import { useState } from 'react';
-import { Outlet } from 'react-router-dom';
+
+import { Outlet, Navigate } from 'react-router-dom';
 // @mui
 import { styled } from '@mui/material/styles';
-//
+
+import { useIsAuthenticated } from 'react-auth-kit';
+
 import Header from './header';
 import Nav from './nav';
+import BasicTable from '../../components/table';
+
 
 // ----------------------------------------------------------------------
 
@@ -13,6 +18,7 @@ const APP_BAR_DESKTOP = 92;
 
 const StyledRoot = styled('div')({
   display: 'flex',
+  // flexDirection: 'row-reverse',
   minHeight: '100%',
   overflow: 'hidden',
 });
@@ -33,17 +39,36 @@ const Main = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function DashboardLayout() {
-  const [open, setOpen] = useState(false);
 
-  return (
-    <StyledRoot>
+
+  const [open, setOpen] = useState(false);
+  const isAuthenticated = useIsAuthenticated()
+
+
+  return (isAuthenticated()) ?
+    (
+      <StyledRoot>
+        <Header onOpenNav={() => setOpen(true)} />
+
+        <Nav openNav={open} onCloseNav={() => setOpen(false)} />
+
+        <Main>
+          <BasicTable/>
+          <Outlet />
+        </Main>
+      </StyledRoot>
+    ) :
+    (
+      <StyledRoot>
       <Header onOpenNav={() => setOpen(true)} />
 
       <Nav openNav={open} onCloseNav={() => setOpen(false)} />
 
       <Main>
+        <BasicTable />
         <Outlet />
       </Main>
+      {/* <Navigate to='/login' /> */}
     </StyledRoot>
-  );
+    )
 }

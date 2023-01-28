@@ -1,7 +1,12 @@
 import { useState } from 'react';
+import {  useNavigate } from 'react-router-dom';
+
 // @mui
 import { alpha } from '@mui/material/styles';
 import { Box, Divider, Typography, Stack, MenuItem, Avatar, IconButton, Popover } from '@mui/material';
+
+import { useSignOut } from 'react-auth-kit'
+
 // mocks_
 import account from '../../../_mock/account';
 
@@ -26,6 +31,8 @@ const MENU_OPTIONS = [
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
+  const navigate = useNavigate()
+  const logOut = useSignOut()
 
   const handleOpen = (event) => {
     setOpen(event.currentTarget);
@@ -33,6 +40,8 @@ export default function AccountPopover() {
 
   const handleClose = () => {
     setOpen(null);
+    logOut();
+    navigate('/login')
   };
 
   return (
