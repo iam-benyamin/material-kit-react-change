@@ -26,9 +26,6 @@ export default function LoginForm() {
   const [showError, SetShowError] = useState(false);
   const signIn = useSignIn();
 
-
-
-
   const handleClick = () => {
     if (email === "abc@mail.com" && password === "123456") {
       signIn(
