@@ -10,17 +10,41 @@ import Paper from '@mui/material/Paper';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
 import { useEffect, useState } from 'react';
 import { api } from '../../utils/api'
 
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '60%',
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 export default function BasicTable() {
   const [open, setOpen] = useState(false);
+  const [massage, setMassage] = useState('');
+
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [rowId, setRowId] = useState(0);
+
+  const [openModal, setOpenModal] = useState(false);
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
 
   const handleClick = () => {
     setOpen(true);
@@ -81,15 +105,19 @@ export default function BasicTable() {
                 <button style={{ border: "none", 'background': 'transparent', 'cursor': 'pointer', 'marginRight': '10px' }}
                   type="submit"
                   onClick={async () => {
-                    await api.patch(`posts/${row.id}`, {});
-                    handleClick();
+                    handleOpenModal();
+                    setTitle(row.title);
+                    setBody(row.body);
+                    setRowId(row.id);
                   }}
                 ><EditIcon /></button>
 
-                <button style={{ border: "none", 'background': 'transparent', 'cursor': 'pointer', color: 'red' }} type="submit" onClick={async () => {
-                  await api.delete(`posts/${row.id}`);
-                  handleClick();
-                }}
+                <button style={{ border: "none", 'background': 'transparent', 'cursor': 'pointer', color: 'red' }} type="submit"
+                  onClick={async () => {
+                    await api.delete(`posts/${row.id}`);
+                    setMassage('deleted succesfuly');
+                    handleClick();
+                  }}
                 ><DeleteIcon /></button>
               </TableCell>
             </TableRow>
@@ -101,9 +129,48 @@ export default function BasicTable() {
         open={open}
         autoHideDuration={6000}
         onClose={handleClose}
-        message="delete succssfuly"
+        message={massage}
         action={action}
       />
+      <div>
+        <Modal
+          open={openModal}
+          onClose={handleCloseModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={modalStyle}>
+            <Typography id="modal-modal-title" variant="h6" component="h2">
+              Edit
+            </Typography>
+            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+              <TextField
+                id="table-title"
+                label="title"
+                defaultValue={title}
+                margin="normal"
+                fullWidth
+              />
+              <TextField
+                id="table-body"
+                label="body"
+                defaultValue={body}
+                margin="normal"
+                fullWidth
+              />
+            </Typography>
+            <Button onClick={async () => {
+              const response = await api.patch(`posts/${rowId}`, {'title': title, 'body': body});
+              console.log(response)
+              console.log(response.status)
+
+              handleCloseModal();
+              setMassage(`updated succesfuly`);
+              handleClick();
+            }} >Save</Button>
+          </Box>
+        </Modal>
+      </div>
     </TableContainer>
   );
 }
